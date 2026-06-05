@@ -1,0 +1,75 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "meiva"
+version = "0.0.1"
+description = "Caller-agnostic functional annotation of mobile element insertions (MEIs) — VEP for mobile elements."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "TODO Your Name", email = "todo@example.org" }]
+keywords = [
+    "bioinformatics", "mobile element insertion", "MEI", "transposable element",
+    "retrotransposon", "Alu", "LINE-1", "SVA", "annotation", "VCF",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Typing :: Typed",
+]
+# Core data model is pure stdlib. cyvcf2 is the VCF engine for the ingest layer.
+dependencies = [
+    "cyvcf2>=0.30",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pre-commit",
+]
+
+[project.urls]
+Homepage = "https://github.com/TODO/meiva"
+Source = "https://github.com/TODO/meiva"
+Issues = "https://github.com/TODO/meiva/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/meiva"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unreachable = true
+files = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[[tool.mypy.overrides]]
+module = "cyvcf2.*"
+ignore_missing_imports = true

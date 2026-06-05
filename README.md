@@ -1,5 +1,3 @@
-# MEIVA
-Mobile Element Insertion Variant Annotator 
 # MEIVA — Mobile Element Insertion Variant Annotator
 
 **VEP for mobile elements.** A caller-agnostic engine that turns raw MEI calls

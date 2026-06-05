@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use MEIVA, please cite it."
+title: "MEIVA: Mobile Element Insertion Variant Annotator"
+type: software
+authors:
+  - given-names: "TODO"
+    family-names: "TODO"
+    affiliation: "TODO"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
+repository-code: "https://github.com/TODO/meiva"
+license: MIT
+version: 0.0.1
