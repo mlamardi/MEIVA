@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- End-to-end Layer-1 pipeline (`meiva.pipeline`): `run()` merges per-sample VCFs,
+  annotates each cohort site against a GENCODE model, and writes an annotated TSV
+  (cohort genotype summaries + genic context). `annotate_cohort`/`write_tsv` are
+  pure and unit-tested; `examples/annotate_cohort.py` exposes it on the command line.
+- Reference-data cache (`meiva.cache`): `CacheManager` downloads, checksums,
+  and versions external reference files behind a JSON manifest, with atomic
+  installs and an injectable fetcher (stdlib `urllib` by default). `gencode_resource`
+  pins a GENCODE release (default v46, GRCh38). Cache location honours
+  `MEIVA_CACHE_DIR` / `XDG_CACHE_HOME`.
 - GENCODE GTF loader (`meiva.annotate.gencode`): parses a GRCh38 GENCODE GTF
   (plain or gzipped) into the gene model, recording per-transcript CDS span and
   the MANE Select tag; `IndexedGeneModel` provides a binned index for

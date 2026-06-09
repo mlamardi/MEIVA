@@ -1,29 +1,19 @@
-"""Annotation layers (Layer 1+): genic context, consequence, frequency, ...
+"""MEIVA — caller-agnostic functional annotation of mobile element insertions.
 
-Each layer takes MEISite / cohort objects and enriches them. Layer 1 (genic
-context) lives in `genic.py`.
+"VEP for mobile elements." See the README for the design philosophy and roadmap.
 """
 
-from __future__ import annotations
+from meiva.cohort import Cohort, CohortSite, merge_sites
+from meiva.model import MEIFamily, MEISite, SampleGenotype, Strand
 
-from meiva.annotate.genic import (
-    Gene,
-    GeneModel,
-    GenicContext,
-    GenicRegion,
-    InMemoryGeneModel,
-    InsertionOrientation,
-    Transcript,
-    annotate_genic,
-)
-
+__version__ = "0.0.1"
 __all__ = [
-    "Gene",
-    "GeneModel",
-    "GenicContext",
-    "GenicRegion",
-    "InMemoryGeneModel",
-    "InsertionOrientation",
-    "Transcript",
-    "annotate_genic",
+    "Cohort",
+    "CohortSite",
+    "MEIFamily",
+    "MEISite",
+    "SampleGenotype",
+    "Strand",
+    "__version__",
+    "merge_sites",
 ]

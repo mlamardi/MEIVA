@@ -14,6 +14,13 @@ from meiva.model import MEIFamily, Strand
 DATA = Path(__file__).parent / "data"
 SAMPLE_VCF = DATA / "SAMPLE_REDACTED.vcf"
 
+# The real VDA VCFs are gitignored (real cohort data), so they're absent in CI
+# and fresh clones. Skip rather than error; re-activates once a committable
+# fixture (e.g. an HGDP/TSI xTEA VCF) is placed in tests/data.
+pytestmark = pytest.mark.skipif(
+    not SAMPLE_VCF.exists(), reason="xTEA VCF fixture not present (gitignored real data)"
+)
+
 
 @pytest.fixture(scope="module")
 def sites_by_pos():
