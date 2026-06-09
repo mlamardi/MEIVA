@@ -6,11 +6,13 @@ context) lives in `genic.py`.
 
 from __future__ import annotations
 
+from meiva.annotate.gencode import load_gencode, parse_gencode_gtf
 from meiva.annotate.genic import (
     Gene,
     GeneModel,
     GenicContext,
     GenicRegion,
+    IndexedGeneModel,
     InMemoryGeneModel,
     InsertionOrientation,
     Transcript,
@@ -23,7 +25,10 @@ __all__ = [
     "GenicContext",
     "GenicRegion",
     "InMemoryGeneModel",
+    "IndexedGeneModel",
     "InsertionOrientation",
     "Transcript",
     "annotate_genic",
+    "load_gencode",
+    "parse_gencode_gtf",
 ]
