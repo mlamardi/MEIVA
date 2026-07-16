@@ -22,5 +22,5 @@ htmlcov/
 # local planning doc — keep out of the public repo
 /ROADMAP.md
 
-# macOS Finder junk
-.DS_Store
+# public HGDP/TSI fixtures are committable (openly consented); VDA data stays ignored
+!tests/data/HGDP*.tsi.vcf

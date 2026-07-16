@@ -59,7 +59,12 @@ src = ["src", "tests"]
 select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RUF"]
 
 [tool.mypy]
-python_version = "3.10"
+# NOTE: deliberately no `python_version` pin. Pinning it (we had "3.10") makes mypy
+# parse *every* file, including third-party stubs, with that version's grammar --
+# and numpy's stubs now use PEP 695 `type X = ...`, which is 3.12+. On the 3.12/3.13
+# CI jobs that pin made mypy reject numpy's own .pyi. Unpinned, each job type-checks
+# against the interpreter it runs on, which is the point of the version matrix; the
+# 3.10 job plus ruff's target-version = "py310" keep us honest about the floor.
 strict = true
 warn_unreachable = true
 files = ["src", "tests"]
