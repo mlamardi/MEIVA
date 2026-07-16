@@ -7,7 +7,7 @@ import pytest
 
 from meiva.annotate.fantom6 import EvidenceTier, Fantom6Evidence
 from meiva.annotate.genic import Gene, InMemoryGeneModel, Transcript
-from meiva.cohort import merge_sites
+from meiva.cohort import Cohort, merge_sites
 from meiva.model import MEIFamily, MEISite, SampleGenotype, Strand
 from meiva.pipeline import TSV_HEADER, annotate_cohort, base_gene_id, run, write_tsv
 
@@ -171,7 +171,7 @@ def _evidence(gene: str, tier: EvidenceTier) -> Fantom6Evidence:
     )
 
 
-def _cds_cohort():
+def _cds_cohort() -> Cohort:
     return merge_sites([_site(1151, "A", (0, 1))])
 
 

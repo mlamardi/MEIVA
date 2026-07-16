@@ -9,6 +9,7 @@ from meiva.annotate.consequence import (
     FULL_LENGTH_L1_BP,
     IMPACT_SEVERITY,
     Consequence,
+    ConsequenceResult,
     Impact,
     classify_consequence,
 )
@@ -30,7 +31,13 @@ def _ctx(
     return GenicContext(region=region, orientation=orientation, gene_biotype=biotype)
 
 
-def _classify(family, region, orientation=InsertionOrientation.UNKNOWN, length=None, biotype=None):
+def _classify(
+    family: MEIFamily,
+    region: GenicRegion,
+    orientation: InsertionOrientation = InsertionOrientation.UNKNOWN,
+    length: int | None = None,
+    biotype: str | None = None,
+) -> ConsequenceResult:
     return classify_consequence(_site(family, length), _ctx(region, orientation, biotype))
 
 
