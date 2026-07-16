@@ -6,8 +6,53 @@
 consequences, population frequencies, regulatory context, and disease
 knowledge.
 
-> Status: **pre-alpha, under active construction.** The data model and ingest
-> layer are landing first. Not yet usable end-to-end.
+> Status: **alpha, under active development.** The pipeline runs end to end for
+> xTEA cohorts: parse, merge across samples, annotate against GENCODE, and emit a
+> per-locus table with genic context and MEI-aware consequence calls (Layer 1 and
+> Layer 2). A second caller (MELT), true population frequencies, and
+> regulatory/lncRNA overlap are the next layers.
+
+## Install
+
+```bash
+pip install -e .        # from a checkout; PyPI/bioconda packaging is planned
+```
+
+Requires Python 3.10 or newer. The only runtime dependency is `cyvcf2`.
+
+## Usage
+
+MEIVA installs a `meiva` command with two subcommands (both also work as
+`python -m meiva ...`).
+
+Annotate a cohort of caller VCFs against a GENCODE GTF, writing an annotated
+per-locus table:
+
+```bash
+meiva annotate --vcf sample1.vcf sample2.vcf \
+  --gencode gencode.v47.annotation.gtf.gz \
+  -o cohort.annotated.tsv
+```
+
+Omit `-o` to stream the table to stdout so it composes with shell pipelines.
+
+Optionally add FANTOM6 lncRNA functional evidence (all three files together):
+
+```bash
+meiva annotate --vcf sample1.vcf sample2.vcf \
+  --gencode gencode.v47.annotation.gtf.gz \
+  --fantom6-degs DESeq2_genes_ASO_signif.tsv.bz2 \
+  --fantom6-samples Published_sample_summary.tsv.bz2 \
+  --fantom6-cat FANTOM_CAT.lv3_robust.info_table.ID_mapping.tsv.gz \
+  -o cohort.annotated.tsv
+```
+
+Inspect a single caller's output as normalized `MEISite` records, without
+annotation (handy for checking that a new caller parses correctly):
+
+```bash
+meiva parse --vcf sample1.vcf | head
+```
 
 ## Why this exists
 
@@ -34,14 +79,29 @@ something mechanistically different from an AluY in a 3′UTR. MEIVA models that
 - **Reproducible references.** Reference data is versioned and built via a
   cache manager, not bundled and forgotten.
 
-## Roadmap
+## Status by layer
 
-- **Phase 1 (MVP):** ingest (xTEA + MELT) → genic context → consequence tiers →
-  population frequency (gnomAD-SV v4 + 1000G) → annotated VCF/TSV.
-- **Phase 2:** regulatory overlap, curated disease-MEI database, gene-constraint
-  prioritisation, HTML reports.
-- **Phase 3:** more callers, long-read inputs, clinical mode, web front end.
+- **Ingest.** xTEA parser behind a caller-agnostic parser interface. (MELT next.)
+- **Cohort merge.** Interval-based merge across samples with breakpoint-jitter
+  handling and discovery-based carrier frequencies.
+- **Layer 1, genic context.** CDS, UTR, non-coding exon, splice, intron,
+  promoter, up/downstream, intergenic; strand-aware, with sense/antisense
+  orientation, MANE-Select flag, gene biotype, and nearest-gene distance,
+  annotated against a pinned GENCODE release (v47).
+- **Layer 2, consequence model.** VEP-style mechanistic consequence term plus an
+  ordinal impact tier, derived from element family, orientation, region, length,
+  and biotype.
+
+- **Layer 4, lncRNA functional evidence.** FANTOM6 knockdown phenotypes joined onto
+  the host gene by Ensembl ID, tiered by how many independent ASOs responded.
+
+Planned:
+
+- **Layer 4, regulatory context** via FANTOM5 enhancer and promoter overlap.
+- **MELT parser,** to exercise and lock the caller-agnostic design.
+- **Layer 3, population frequency** by force-genotyping discovered sites back
+  against the samples, for true allele frequencies rather than discovery counts.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).

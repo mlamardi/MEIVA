@@ -1,8 +1,8 @@
 """Tests for the cohort merger.
 
-Built from in-memory MEISite objects so they need no VCF fixtures. The
-merge_vcfs smoke test runs only if the (gitignored) real VCFs are present
-locally, and is skipped in CI.
+Most tests build in-memory MEISite objects so they need no VCF fixtures. The
+merge_vcfs smoke test runs against the committed public HGDP/TSI fixtures, so it
+executes in CI as well as locally.
 """
 
 from pathlib import Path
@@ -153,15 +153,16 @@ def test_negative_window_rejected():
 
 
 # --------------------------------------------------------------------------- #
-# merge_vcfs against real data (local only; gitignored fixtures)              #
+# merge_vcfs against the committed public HGDP/TSI fixtures (run in CI)        #
 # --------------------------------------------------------------------------- #
-_REAL = sorted((Path(__file__).parent / "data").glob("ASL_VDA_*.vcf"))
+_TSI = sorted((Path(__file__).parent / "data").glob("HGDP*.tsi.vcf"))
 
 
-@pytest.mark.skipif(len(_REAL) < 2, reason="real VCF fixtures not present (gitignored)")
 def test_merge_vcfs_smoke():
-    cohort = merge_vcfs(_REAL)
-    assert cohort.n_samples == len(_REAL)
-    assert cohort.n_sites > 0
+    cohort = merge_vcfs(_TSI)
+    assert cohort.n_samples == 2
+    assert cohort.n_sites == 54  # frozen-fixture regression guard
     # every merged site references at least one carrier
     assert all(cs.n_carriers >= 1 for cs in cohort.sites)
+    # 19 sites are carried by both Tuscan samples (common polymorphic MEIs)
+    assert sum(1 for cs in cohort.sites if cs.n_carriers == 2) == 19

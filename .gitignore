@@ -21,3 +21,6 @@ htmlcov/
 
 # local planning doc — keep out of the public repo
 /ROADMAP.md
+
+# macOS Finder junk
+.DS_Store

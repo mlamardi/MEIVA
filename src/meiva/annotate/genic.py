@@ -121,6 +121,7 @@ class Gene:
     end: int
     strand: Strand
     transcripts: tuple[Transcript, ...] = ()
+    biotype: str | None = None  # GENCODE gene_type, e.g. "protein_coding", "lncRNA"
 
 
 @dataclass(frozen=True, slots=True)
@@ -130,6 +131,7 @@ class GenicContext:
     region: GenicRegion
     gene_id: str | None = None
     gene_name: str | None = None
+    gene_biotype: str | None = None  # GENCODE gene_type of the reported gene
     gene_strand: Strand | None = None
     transcript_id: str | None = None
     orientation: InsertionOrientation = InsertionOrientation.UNKNOWN
@@ -301,6 +303,7 @@ def annotate_genic(
                 region=region,
                 gene_id=gene.gene_id,
                 gene_name=gene.gene_name,
+                gene_biotype=gene.biotype,
                 gene_strand=gene.strand,
                 transcript_id=tx_id,
                 orientation=_orientation(site.strand, gene.strand),
@@ -332,6 +335,7 @@ def annotate_genic(
                     region=region,
                     gene_id=gene.gene_id,
                     gene_name=gene.gene_name,
+                    gene_biotype=gene.biotype,
                     gene_strand=gene.strand,
                     orientation=_orientation(site.strand, gene.strand),
                     distance=dist,
@@ -344,6 +348,7 @@ def annotate_genic(
             region=GenicRegion.INTERGENIC,
             gene_id=nearest_gene.gene_id,
             gene_name=nearest_gene.gene_name,
+            gene_biotype=nearest_gene.biotype,
             gene_strand=nearest_gene.strand,
             orientation=_orientation(site.strand, nearest_gene.strand),
             distance=nearest_gap,

@@ -1,9 +1,10 @@
 """End-to-end glue: per-sample VCFs -> merged cohort -> genic annotation -> TSV.
 
 This wires the components built so far into one runnable path so a cohort can be
-taken from raw caller output to an annotated table. It is intentionally a
-*Layer-1 preview*: the TSV carries cohort genotype summaries and genic context,
-but not yet the consequence tiers (Layer 2) or population frequencies (Layer 3).
+taken from raw caller output to an annotated table. The TSV carries cohort
+genotype summaries, Layer-1 genic context, and Layer-2 consequence terms with
+impact tiers. Population frequencies (Layer 3) are not yet included --
+``carrier_frequency`` is a discovery-based lower bound, not a true allele frequency.
 
 The pieces are separated for testability:
 
@@ -15,28 +16,68 @@ The pieces are separated for testability:
 from __future__ import annotations
 
 import csv
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TextIO
 
+from meiva.annotate.consequence import ConsequenceResult, classify_consequence
+from meiva.annotate.fantom6 import Fantom6Evidence
 from meiva.annotate.genic import GeneModel, GenicContext, annotate_genic
 from meiva.cohort import Cohort, CohortSite
 
-__all__ = ["TSV_HEADER", "AnnotatedSite", "annotate_cohort", "run", "write_tsv"]
+__all__ = [
+    "TSV_HEADER",
+    "AnnotatedSite",
+    "annotate_cohort",
+    "annotate_vcfs",
+    "base_gene_id",
+    "run",
+    "write_tsv",
+]
 
 
 @dataclass(frozen=True, slots=True)
 class AnnotatedSite:
-    """A merged cohort site paired with its genic annotation."""
+    """A merged cohort site paired with its genic annotation and consequence call."""
 
     cohort_site: CohortSite
     genic: GenicContext
+    consequence: ConsequenceResult
+    fantom6: Fantom6Evidence | None = None
+    """FANTOM6 knockdown evidence for the reported gene, when that gene was tested."""
 
 
-def annotate_cohort(cohort: Cohort, model: GeneModel) -> list[AnnotatedSite]:
-    """Run genic annotation over every site in a merged cohort."""
-    return [AnnotatedSite(cs, annotate_genic(cs.site, model)) for cs in cohort.sites]
+def base_gene_id(gene_id: str | None) -> str | None:
+    """Strip the version suffix from an Ensembl gene ID (``ENSG...5`` -> ``ENSG...``)."""
+    if gene_id is None:
+        return None
+    return gene_id.split(".", 1)[0]
+
+
+def annotate_cohort(
+    cohort: Cohort,
+    model: GeneModel,
+    *,
+    fantom6: Mapping[str, Fantom6Evidence] | None = None,
+) -> list[AnnotatedSite]:
+    """Run Layer-1 genic annotation and Layer-2 consequence over every cohort site.
+
+    ``fantom6`` maps unversioned Ensembl gene IDs to knockdown evidence (see
+    :func:`meiva.annotate.fantom6.evidence_by_ensembl`). It is joined on the reported
+    gene's ID -- never on symbol -- and left absent when the gene was not tested.
+    """
+    annotated: list[AnnotatedSite] = []
+    for cs in cohort.sites:
+        genic = annotate_genic(cs.site, model)
+        consequence = classify_consequence(cs.site, genic)
+        evidence: Fantom6Evidence | None = None
+        if fantom6:
+            gid = base_gene_id(genic.gene_id)
+            if gid is not None:
+                evidence = fantom6.get(gid)
+        annotated.append(AnnotatedSite(cs, genic, consequence, evidence))
+    return annotated
 
 
 TSV_HEADER = [
@@ -57,11 +98,17 @@ TSV_HEADER = [
     "region",
     "gene_id",
     "gene_name",
+    "gene_biotype",
     "gene_strand",
     "transcript_id",
     "is_mane_select",
     "orientation",
     "distance",
+    "consequence",
+    "impact",
+    "consequence_flags",
+    "fantom6_evidence",
+    "fantom6_cell_types",
     "carriers",
 ]
 
@@ -95,11 +142,17 @@ def _row(a: AnnotatedSite) -> list[str]:
         g.region.value,
         g.gene_id or "",
         g.gene_name or "",
+        g.gene_biotype or "",
         "" if g.gene_strand is None else g.gene_strand.value,
         g.transcript_id or "",
         "true" if g.is_mane_select else "false",
         g.orientation.value,
         "" if g.distance is None else str(g.distance),
+        a.consequence.consequence.value,
+        a.consequence.impact.value,
+        ";".join(a.consequence.flags),
+        "" if a.fantom6 is None else a.fantom6.tier.value,
+        "" if a.fantom6 is None else ";".join(a.fantom6.cell_types),
         carriers,
     ]
 
@@ -112,24 +165,40 @@ def write_tsv(sites: Iterable[AnnotatedSite], out: TextIO) -> None:
         writer.writerow(_row(site))
 
 
-def run(
+def annotate_vcfs(
     vcf_paths: Iterable[str | Path],
     gencode_gtf: str | Path,
-    out_tsv: str | Path,
     *,
     window: int | None = None,
-) -> int:
-    """Full path: merge ``vcf_paths``, annotate against ``gencode_gtf``, write ``out_tsv``.
+    fantom6: Mapping[str, Fantom6Evidence] | None = None,
+) -> list[AnnotatedSite]:
+    """Merge ``vcf_paths`` and annotate against ``gencode_gtf`` -- the pure core of :func:`run`.
 
-    Returns the number of annotated cohort sites written. Imports the VCF and
-    GENCODE machinery lazily so importing this module stays light.
+    Returns the annotated cohort sites without writing anything, so callers (the
+    CLI, tests) can stream them wherever they like. Imports the VCF and GENCODE
+    machinery lazily so importing this module stays light.
     """
     from meiva.annotate.gencode import load_gencode
     from meiva.cohort import DEFAULT_MERGE_WINDOW, merge_vcfs
 
     cohort = merge_vcfs(vcf_paths, window=window if window is not None else DEFAULT_MERGE_WINDOW)
     model = load_gencode(gencode_gtf)
-    annotated = annotate_cohort(cohort, model)
+    return annotate_cohort(cohort, model, fantom6=fantom6)
+
+
+def run(
+    vcf_paths: Iterable[str | Path],
+    gencode_gtf: str | Path,
+    out_tsv: str | Path,
+    *,
+    window: int | None = None,
+    fantom6: Mapping[str, Fantom6Evidence] | None = None,
+) -> int:
+    """Full path: merge ``vcf_paths``, annotate against ``gencode_gtf``, write ``out_tsv``.
+
+    Returns the number of annotated cohort sites written.
+    """
+    annotated = annotate_vcfs(vcf_paths, gencode_gtf, window=window, fantom6=fantom6)
     with open(out_tsv, "w", newline="") as fh:
         write_tsv(annotated, fh)
     return len(annotated)

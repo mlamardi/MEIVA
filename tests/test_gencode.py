@@ -35,7 +35,7 @@ _LINES = [
             ".",
             "+",
             ".",
-            'gene_id "ENSGTEST.1"; gene_name "TESTGENE";',
+            'gene_id "ENSGTEST.1"; gene_name "TESTGENE"; gene_type "protein_coding";',
         ]
     ),
     GTF(
@@ -166,7 +166,7 @@ _LINES = [
             ".",
             "-",
             ".",
-            'gene_id "ENSG2.1"; gene_name "GENE2";',
+            'gene_id "ENSG2.1"; gene_name "GENE2"; gene_type "lncRNA";',
         ]
     ),
     GTF(
@@ -215,6 +215,8 @@ def test_parses_genes_and_transcripts(gtf_file):
     assert g.gene_name == "TESTGENE"
     assert g.chrom == "chr1"
     assert g.strand is Strand.PLUS
+    assert g.biotype == "protein_coding"
+    assert genes["ENSG2.1"].biotype == "lncRNA"
     assert (g.start, g.end) == (1000, 2200)  # 1-based 1001..2200 -> 0-based half-open
     assert len(g.transcripts) == 2
 

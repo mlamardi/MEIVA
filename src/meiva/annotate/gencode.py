@@ -28,6 +28,7 @@ __all__ = ["load_gencode", "parse_gencode_gtf"]
 
 _GENE_ID = re.compile(r'gene_id "([^"]+)"')
 _GENE_NAME = re.compile(r'gene_name "([^"]+)"')
+_GENE_TYPE = re.compile(r'gene_type "([^"]+)"')
 _TX_ID = re.compile(r'transcript_id "([^"]+)"')
 _MANE_SELECT = re.compile(r'tag "MANE_Select"')
 
@@ -54,6 +55,7 @@ class _GeneBuilder:
     start: int
     end: int
     strand: Strand
+    biotype: str | None = None
 
 
 def _open(path: str | Path) -> Iterator[str]:
@@ -97,6 +99,7 @@ def parse_gencode_gtf(path: str | Path) -> list[Gene]:
                 start=start,
                 end=end,
                 strand=strand,
+                biotype=_search(_GENE_TYPE, attrs),
             )
         elif feature == "transcript":
             tx_id = _search(_TX_ID, attrs)
@@ -139,6 +142,7 @@ def parse_gencode_gtf(path: str | Path) -> list[Gene]:
                 end=gb.end,
                 strand=gb.strand,
                 transcripts=tuple(by_gene.get(gene_id, ())),
+                biotype=gb.biotype,
             )
         )
     return out

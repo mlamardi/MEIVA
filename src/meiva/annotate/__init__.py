@@ -6,6 +6,20 @@ context) lives in `genic.py`.
 
 from __future__ import annotations
 
+from meiva.annotate.consequence import (
+    Consequence,
+    ConsequenceResult,
+    Impact,
+    classify_consequence,
+)
+from meiva.annotate.fantom6 import (
+    EvidenceTier,
+    Fantom6Evidence,
+    evidence_by_ensembl,
+    load_cat_gene_ids,
+    load_fantom6_evidence,
+    target_to_ensembl,
+)
 from meiva.annotate.gencode import load_gencode, parse_gencode_gtf
 from meiva.annotate.genic import (
     Gene,
@@ -20,15 +34,25 @@ from meiva.annotate.genic import (
 )
 
 __all__ = [
+    "Consequence",
+    "ConsequenceResult",
+    "EvidenceTier",
+    "Fantom6Evidence",
     "Gene",
     "GeneModel",
     "GenicContext",
     "GenicRegion",
+    "Impact",
     "InMemoryGeneModel",
     "IndexedGeneModel",
     "InsertionOrientation",
     "Transcript",
     "annotate_genic",
+    "classify_consequence",
+    "evidence_by_ensembl",
+    "load_cat_gene_ids",
+    "load_fantom6_evidence",
     "load_gencode",
     "parse_gencode_gtf",
+    "target_to_ensembl",
 ]

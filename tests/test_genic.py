@@ -29,6 +29,7 @@ PLUS_GENE = Gene(
             cds_end=2100,
         ),
     ),
+    biotype="protein_coding",
 )
 
 # Same structure, minus strand: UTR sides flip.
@@ -57,6 +58,7 @@ NONCODING_GENE = Gene(
     end=1200,
     strand=Strand.PLUS,
     transcripts=(Transcript(transcript_id="ENST_NC", exons=((1000, 1200),)),),
+    biotype="lncRNA",
 )
 
 MODEL = InMemoryGeneModel([PLUS_GENE, MINUS_GENE, NONCODING_GENE])
@@ -124,6 +126,16 @@ def test_orientation_sense():
 def test_orientation_antisense():
     ctx = annotate_genic(_site("chr1", 1151, Strand.MINUS), MODEL)
     assert ctx.orientation is InsertionOrientation.ANTISENSE
+
+
+def test_gene_biotype_propagates():
+    # CDS hit in the protein-coding gene carries its biotype through to the result
+    coding = annotate_genic(_site("chr1", 1151), MODEL)
+    assert coding.region is GenicRegion.CDS
+    assert coding.gene_biotype == "protein_coding"
+    # exon hit in the lncRNA gene carries the lncRNA biotype
+    noncoding = annotate_genic(_site("chr3", 1100), MODEL)
+    assert noncoding.gene_biotype == "lncRNA"
 
 
 def test_orientation_unknown_when_site_strand_unknown():
