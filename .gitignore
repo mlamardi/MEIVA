@@ -24,3 +24,6 @@ htmlcov/
 
 # public HGDP/TSI fixtures are committable (openly consented); VDA data stays ignored
 !tests/data/HGDP*.tsi.vcf
+
+# macOS Finder metadata
+.DS_Store
