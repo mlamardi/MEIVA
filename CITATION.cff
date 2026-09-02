@@ -3,10 +3,10 @@ message: "If you use MEIVA, please cite it."
 title: "MEIVA: Mobile Element Insertion Variant Annotator"
 type: software
 authors:
-  - given-names: "TODO"
-    family-names: "TODO"
-    affiliation: "TODO"
-    # orcid: "https://orcid.org/0000-0000-0000-0000"
-repository-code: "https://github.com/TODO/meiva"
+  - given-names: "Seyedmohammad"
+    family-names: "Hosseinpourlamardi"
+    affiliation: "Istituto Italiano di Tecnologia - Center for Clinical and Computational Genomics"
+    orcid: "https://orcid.org/0009-0008-7123-9664"
+repository-code: "https://github.com/mlamardi/MEIVA"
 license: MIT
-version: 0.0.1
+version: 0.1.0

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-02
+
 ### Added
 - FANTOM5 regulatory annotation (`meiva.annotate.fantom5`). Overlays transcribed
   enhancers and CAGE-defined promoters onto each locus, adding six TSV columns:

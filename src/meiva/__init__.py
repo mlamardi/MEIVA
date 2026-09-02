@@ -6,7 +6,7 @@
 from meiva.cohort import Cohort, CohortSite, merge_sites
 from meiva.model import MEIFamily, MEISite, SampleGenotype, Strand
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 __all__ = [
     "Cohort",
     "CohortSite",

@@ -4,18 +4,18 @@ build-backend = "hatchling.build"
 
 [project]
 name = "meiva"
-version = "0.0.1"
+dynamic = ["version"]
 description = "Caller-agnostic functional annotation of mobile element insertions (MEIs) — VEP for mobile elements."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-authors = [{ name = "TODO Your Name", email = "todo@example.org" }]
+authors = [{ name = "Seyedmohammad Hosseinpourlamardi" }]
 keywords = [
     "bioinformatics", "mobile element insertion", "MEI", "transposable element",
     "retrotransposon", "Alu", "LINE-1", "SVA", "annotation", "VCF",
 ]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3.10",
@@ -43,9 +43,12 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/TODO/meiva"
-Source = "https://github.com/TODO/meiva"
-Issues = "https://github.com/TODO/meiva/issues"
+Homepage = "https://github.com/mlamardi/MEIVA"
+Source = "https://github.com/mlamardi/MEIVA"
+Issues = "https://github.com/mlamardi/MEIVA/issues"
+
+[tool.hatch.version]
+path = "src/meiva/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/meiva"]
