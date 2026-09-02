@@ -1,24 +1,37 @@
 # MEIVA — Mobile Element Insertion Variant Annotator
 
+[![PyPI](https://img.shields.io/pypi/v/meiva.svg)](https://pypi.org/project/meiva/)
+[![Python](https://img.shields.io/pypi/pyversions/meiva.svg)](https://pypi.org/project/meiva/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 **VEP for mobile elements.** A caller-agnostic engine that turns raw MEI calls
 (Alu, LINE-1, SVA) from tools like **xTEA** and **MELT** into *interpreted*,
-*prioritised* variants — with element- and orientation-aware functional
+*prioritised* variants, with element and orientation-aware functional
 consequences, population frequencies, regulatory context, and disease
 knowledge.
 
 > Status: **alpha, under active development.** The pipeline runs end to end for
 > xTEA cohorts: parse, merge across samples, annotate against GENCODE, and emit a
-> per-locus table with genic context and MEI-aware consequence calls (Layer 1 and
-> Layer 2). A second caller (MELT), true population frequencies, and
-> regulatory/lncRNA overlap are the next layers.
+> per-locus table carrying genic context, MEI-aware consequence calls, FANTOM5
+> regulatory overlap and FANTOM6 lncRNA functional evidence. A second caller
+> (MELT) and true population frequencies by force-genotyping are the next layers.
 
 ## Install
 
 ```bash
-pip install -e .        # from a checkout; PyPI/bioconda packaging is planned
+pip install meiva
+```
+
+Or from a checkout, for development:
+
+```bash
+git clone https://github.com/mlamardi/MEIVA.git
+cd MEIVA
+pip install -e ".[dev]"
 ```
 
 Requires Python 3.10 or newer. The only runtime dependency is `cyvcf2`.
+A bioconda recipe is planned.
 
 ## Usage
 
