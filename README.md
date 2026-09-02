@@ -71,6 +71,25 @@ meiva annotate --vcf sample1.vcf sample2.vcf \
   -o cohort.annotated.tsv
 ```
 
+### Large cohorts
+
+`meiva annotate` holds every parsed call in memory while merging, so a cohort of
+a few thousand genomes can need tens of gigabytes. `scripts/run_meiva_cohort.sh`
+splits the work by chromosome, which is exactly equivalent (MEIVA only clusters
+calls sharing a contig and family, so no locus can span chromosomes) and brings
+peak memory under 2 GB per worker:
+
+```bash
+./scripts/run_meiva_cohort.sh \
+  --vcf-dir /path/to/vcfs \
+  --gencode gencode.v47.annotation.gtf.gz \
+  --outdir results \
+  --workers 4
+```
+
+It is resumable, takes the same optional `--fantom5-*` and `--fantom6-*` inputs,
+and `--help` lists every option.
+
 Inspect a single caller's output as normalized `MEISite` records, without
 annotation (handy for checking that a new caller parses correctly):
 
