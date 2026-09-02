@@ -47,6 +47,17 @@ meiva annotate --vcf sample1.vcf sample2.vcf \
   -o cohort.annotated.tsv
 ```
 
+Add FANTOM5 regulatory context (either track may be given on its own):
+
+```bash
+meiva annotate --vcf sample1.vcf sample2.vcf \
+  --gencode gencode.v47.annotation.gtf.gz \
+  --fantom5-enhancers F5.hg38.enhancers.bed.gz \
+  --fantom5-peaks hg38_fair+new_CAGE_peaks_phase1and2.bed.gz \
+  --fantom5-peak-names human_phase1and2_CAGE_Peak_name.txt.gz \
+  -o cohort.annotated.tsv
+```
+
 Inspect a single caller's output as normalized `MEISite` records, without
 annotation (handy for checking that a new caller parses correctly):
 
@@ -94,10 +105,10 @@ something mechanistically different from an AluY in a 3′UTR. MEIVA models that
 
 - **Layer 4, lncRNA functional evidence.** FANTOM6 knockdown phenotypes joined onto
   the host gene by Ensembl ID, tiered by how many independent ASOs responded.
+- **Layer 4, regulatory context.** FANTOM5 transcribed enhancers and CAGE-defined
+  promoters, reported as both exact overlap and distance to the nearest element.
 
 Planned:
-
-- **Layer 4, regulatory context** via FANTOM5 enhancer and promoter overlap.
 - **MELT parser,** to exercise and lock the caller-agnostic design.
 - **Layer 3, population frequency** by force-genotyping discovered sites back
   against the samples, for true allele frequencies rather than discovery counts.

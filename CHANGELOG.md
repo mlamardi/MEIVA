@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- FANTOM5 regulatory annotation (`meiva.annotate.fantom5`). Overlays transcribed
+  enhancers and CAGE-defined promoters onto each locus, adding six TSV columns:
+  `fantom5_enhancer`, `fantom5_enhancer_distance`, `fantom5_promoter`,
+  `fantom5_promoter_gene`, `fantom5_promoter_rank`, `fantom5_promoter_distance`.
+  Every site gets both an exact-overlap call **and** a distance, because CAGE peaks
+  are tiny -- median width 14 bp across 209,911 peaks, 0.09% of the genome -- so
+  strict containment alone would miss insertions plainly close enough to disrupt a
+  transcription start site. On real data 3.4% of loci fall within 1 kb of an
+  enhancer against 0.5% strictly inside. The module commits to no window; it
+  reports the evidence and leaves the threshold to the analysis. Promoter distances
+  are measured to the peak's representative TSS (BED `thickStart`) and signed by the
+  peak's strand, and the optional peak-name file supplies the gene and the promoter
+  rank, so a hit in a gene's dominant promoter is distinguishable from one in a
+  minor alternative promoter. Purely additive: it does not feed the Layer 2
+  consequence model, since an insertion in an enhancer that also sits in an intron
+  is still intronic. CLI: `--fantom5-enhancers`, `--fantom5-peaks`,
+  `--fantom5-peak-names`.
 - FANTOM6 evidence wired into the pipeline. `annotate_cohort`, `annotate_vcfs` and
   `run` take an optional `fantom6` mapping of unversioned Ensembl gene ID to
   knockdown evidence; it is joined on the reported gene's ID (version-stripped via

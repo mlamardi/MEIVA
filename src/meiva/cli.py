@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import TextIO
 
 from meiva import __version__
+from meiva.annotate.fantom5 import Fantom5Model
 from meiva.annotate.fantom6 import Fantom6Evidence
 from meiva.model import MEISite
 
@@ -95,11 +96,32 @@ def _load_fantom6(args: argparse.Namespace) -> dict[str, Fantom6Evidence] | None
     return by_gene
 
 
+def _load_fantom5(args: argparse.Namespace) -> Fantom5Model | None:
+    """Build the FANTOM5 regulatory model, or None when no track was requested."""
+    from meiva.annotate.fantom5 import load_fantom5
+
+    if not args.fantom5_enhancers and not args.fantom5_peaks:
+        return None
+    model = load_fantom5(
+        enhancers=args.fantom5_enhancers,
+        cage_peaks=args.fantom5_peaks,
+        peak_names=args.fantom5_peak_names,
+    )
+    print(
+        f"meiva: FANTOM5: {model.n_enhancers:,} enhancers, {model.n_peaks:,} CAGE peaks",
+        file=sys.stderr,
+    )
+    return model
+
+
 def _cmd_annotate(args: argparse.Namespace) -> int:
     from meiva.pipeline import annotate_vcfs, write_tsv
 
     fantom6 = _load_fantom6(args)
-    annotated = annotate_vcfs(args.vcf, args.gencode, window=args.merge_window, fantom6=fantom6)
+    fantom5 = _load_fantom5(args)
+    annotated = annotate_vcfs(
+        args.vcf, args.gencode, window=args.merge_window, fantom6=fantom6, fantom5=fantom5
+    )
     stream, close = _open_out(args.output)
     try:
         write_tsv(annotated, stream)
@@ -165,6 +187,24 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="TSV",
         default=None,
         help="FANTOM6 Published_sample_summary.tsv[.bz2]",
+    )
+    ann.add_argument(
+        "--fantom5-enhancers",
+        metavar="BED",
+        default=None,
+        help="FANTOM5 F5.hg38.enhancers.bed[.gz]",
+    )
+    ann.add_argument(
+        "--fantom5-peaks",
+        metavar="BED",
+        default=None,
+        help="FANTOM5 hg38_fair+new_CAGE_peaks_phase1and2.bed[.gz] (promoters)",
+    )
+    ann.add_argument(
+        "--fantom5-peak-names",
+        metavar="TXT",
+        default=None,
+        help="FANTOM5 human_phase1and2_CAGE_Peak_name.txt[.gz]; adds gene and promoter rank",
     )
     ann.add_argument(
         "--fantom6-cat",

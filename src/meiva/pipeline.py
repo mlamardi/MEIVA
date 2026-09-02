@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import TextIO
 
 from meiva.annotate.consequence import ConsequenceResult, classify_consequence
+from meiva.annotate.fantom5 import Fantom5Model, RegulatoryContext
 from meiva.annotate.fantom6 import Fantom6Evidence
 from meiva.annotate.genic import GeneModel, GenicContext, annotate_genic
 from meiva.cohort import Cohort, CohortSite
@@ -46,6 +47,8 @@ class AnnotatedSite:
     consequence: ConsequenceResult
     fantom6: Fantom6Evidence | None = None
     """FANTOM6 knockdown evidence for the reported gene, when that gene was tested."""
+    regulatory: RegulatoryContext | None = None
+    """FANTOM5 enhancer and CAGE-promoter context for the insertion site."""
 
 
 def base_gene_id(gene_id: str | None) -> str | None:
@@ -60,6 +63,7 @@ def annotate_cohort(
     model: GeneModel,
     *,
     fantom6: Mapping[str, Fantom6Evidence] | None = None,
+    fantom5: Fantom5Model | None = None,
 ) -> list[AnnotatedSite]:
     """Run Layer-1 genic annotation and Layer-2 consequence over every cohort site.
 
@@ -76,7 +80,8 @@ def annotate_cohort(
             gid = base_gene_id(genic.gene_id)
             if gid is not None:
                 evidence = fantom6.get(gid)
-        annotated.append(AnnotatedSite(cs, genic, consequence, evidence))
+        regulatory = fantom5.annotate(cs.site.chrom, cs.site.pos) if fantom5 else None
+        annotated.append(AnnotatedSite(cs, genic, consequence, evidence, regulatory))
     return annotated
 
 
@@ -109,6 +114,12 @@ TSV_HEADER = [
     "consequence_flags",
     "fantom6_evidence",
     "fantom6_cell_types",
+    "fantom5_enhancer",
+    "fantom5_enhancer_distance",
+    "fantom5_promoter",
+    "fantom5_promoter_gene",
+    "fantom5_promoter_rank",
+    "fantom5_promoter_distance",
     "carriers",
 ]
 
@@ -121,6 +132,7 @@ def _row(a: AnnotatedSite) -> list[str]:
     site = a.cohort_site.site
     cs = a.cohort_site
     g = a.genic
+    reg = a.regulatory
     carriers = ";".join(
         f"{sample}:{_dosage_str(gt.dosage)}" for sample, gt in sorted(site.genotypes.items())
     )
@@ -153,6 +165,12 @@ def _row(a: AnnotatedSite) -> list[str]:
         ";".join(a.consequence.flags),
         "" if a.fantom6 is None else a.fantom6.tier.value,
         "" if a.fantom6 is None else ";".join(a.fantom6.cell_types),
+        "" if reg is None or reg.enhancer_id is None else reg.enhancer_id,
+        "" if reg is None or reg.enhancer_distance is None else str(reg.enhancer_distance),
+        "" if reg is None or reg.promoter_id is None else reg.promoter_id,
+        "" if reg is None or reg.promoter_gene is None else reg.promoter_gene,
+        "" if reg is None or reg.promoter_rank is None else str(reg.promoter_rank),
+        "" if reg is None or reg.promoter_distance is None else str(reg.promoter_distance),
         carriers,
     ]
 
@@ -171,6 +189,7 @@ def annotate_vcfs(
     *,
     window: int | None = None,
     fantom6: Mapping[str, Fantom6Evidence] | None = None,
+    fantom5: Fantom5Model | None = None,
 ) -> list[AnnotatedSite]:
     """Merge ``vcf_paths`` and annotate against ``gencode_gtf`` -- the pure core of :func:`run`.
 
@@ -183,7 +202,7 @@ def annotate_vcfs(
 
     cohort = merge_vcfs(vcf_paths, window=window if window is not None else DEFAULT_MERGE_WINDOW)
     model = load_gencode(gencode_gtf)
-    return annotate_cohort(cohort, model, fantom6=fantom6)
+    return annotate_cohort(cohort, model, fantom6=fantom6, fantom5=fantom5)
 
 
 def run(
@@ -193,12 +212,15 @@ def run(
     *,
     window: int | None = None,
     fantom6: Mapping[str, Fantom6Evidence] | None = None,
+    fantom5: Fantom5Model | None = None,
 ) -> int:
     """Full path: merge ``vcf_paths``, annotate against ``gencode_gtf``, write ``out_tsv``.
 
     Returns the number of annotated cohort sites written.
     """
-    annotated = annotate_vcfs(vcf_paths, gencode_gtf, window=window, fantom6=fantom6)
+    annotated = annotate_vcfs(
+        vcf_paths, gencode_gtf, window=window, fantom6=fantom6, fantom5=fantom5
+    )
     with open(out_tsv, "w", newline="") as fh:
         write_tsv(annotated, fh)
     return len(annotated)

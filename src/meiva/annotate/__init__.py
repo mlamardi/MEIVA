@@ -12,6 +12,11 @@ from meiva.annotate.consequence import (
     Impact,
     classify_consequence,
 )
+from meiva.annotate.fantom5 import (
+    Fantom5Model,
+    RegulatoryContext,
+    load_fantom5,
+)
 from meiva.annotate.fantom6 import (
     EvidenceTier,
     Fantom6Evidence,
@@ -37,6 +42,7 @@ __all__ = [
     "Consequence",
     "ConsequenceResult",
     "EvidenceTier",
+    "Fantom5Model",
     "Fantom6Evidence",
     "Gene",
     "GeneModel",
@@ -46,11 +52,13 @@ __all__ = [
     "InMemoryGeneModel",
     "IndexedGeneModel",
     "InsertionOrientation",
+    "RegulatoryContext",
     "Transcript",
     "annotate_genic",
     "classify_consequence",
     "evidence_by_ensembl",
     "load_cat_gene_ids",
+    "load_fantom5",
     "load_fantom6_evidence",
     "load_gencode",
     "parse_gencode_gtf",
