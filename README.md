@@ -3,10 +3,11 @@
 [![PyPI](https://img.shields.io/pypi/v/meiva.svg)](https://pypi.org/project/meiva/)
 [![Python](https://img.shields.io/pypi/pyversions/meiva.svg)](https://pypi.org/project/meiva/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/1259415348.svg)](https://doi.org/10.5281/zenodo.22273161)
 
 **VEP for mobile elements.** A caller-agnostic engine that turns raw MEI calls
 (Alu, LINE-1, SVA) from tools like **xTEA** and **MELT** into *interpreted*,
-*prioritised* variants, with element and orientation-aware functional
+*prioritised* variants — with element- and orientation-aware functional
 consequences, population frequencies, regulatory context, and disease
 knowledge.
 
@@ -144,6 +145,18 @@ Planned:
 - **MELT parser,** to exercise and lock the caller-agnostic design.
 - **Layer 3, population frequency** by force-genotyping discovered sites back
   against the samples, for true allele frequencies rather than discovery counts.
+
+## Citing MEIVA
+
+If MEIVA contributes to work you publish, please cite the archived software:
+
+> Hosseinpourlamardi, S. MEIVA: Mobile Element Insertion Variant Annotator.
+> https://doi.org/10.5281/zenodo.22273161
+
+The DOI above always resolves to the most recent release. To cite the exact
+version you used, follow it and select that version's own DOI.
+`CITATION.cff` in this repository carries the same metadata in machine-readable
+form, and GitHub's "Cite this repository" button will render it for you.
 
 ## License
 

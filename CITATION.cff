@@ -10,3 +10,12 @@ authors:
 repository-code: "https://github.com/mlamardi/MEIVA"
 license: MIT
 version: 0.1.0
+# Concept DOI: always resolves to the latest release.
+doi: 10.5281/zenodo.22273161
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22273161
+    description: "Concept DOI for all versions of MEIVA"
+  - type: doi
+    value: 10.5281/zenodo.22273162
+    description: "DOI for MEIVA version 0.1.0"
