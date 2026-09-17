@@ -6,7 +6,7 @@
 
 **VEP for mobile elements.** A caller-agnostic engine that turns raw MEI calls
 (Alu, LINE-1, SVA) from tools like **xTEA** and **MELT** into *interpreted*,
-*prioritised* variants — with element- and orientation-aware functional
+*prioritised* variants with element and orientation-aware functional
 consequences, population frequencies, regulatory context, and disease
 knowledge.
 
