@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/meiva.svg)](https://pypi.org/project/meiva/)
 [![Python](https://img.shields.io/pypi/pyversions/meiva.svg)](https://pypi.org/project/meiva/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22273162-1682D4)](https://doi.org/10.5281/zenodo.22273162)
+[![ZENODO](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22273162-1682D4)](https://doi.org/10.5281/zenodo.22273162)
 
 **VEP for mobile elements.** A caller-agnostic engine that turns raw MEI calls
 (Alu, LINE-1, SVA) from tools like **xTEA** and **MELT** into *interpreted*,
