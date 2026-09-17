@@ -1,10 +1,16 @@
-"""End-to-end glue: per-sample VCFs -> merged cohort -> genic annotation -> TSV.
+"""End-to-end glue: per-sample VCFs -> merged cohort -> annotation -> TSV.
 
 This wires the components built so far into one runnable path so a cohort can be
 taken from raw caller output to an annotated table. The TSV carries cohort
-genotype summaries, Layer-1 genic context, and Layer-2 consequence terms with
-impact tiers. Population frequencies (Layer 3) are not yet included --
-``carrier_frequency`` is a discovery-based lower bound, not a true allele frequency.
+genotype summaries, Layer 1 genic context, Layer 2 consequence terms with impact
+tiers, and, when their reference files are supplied, Layer 4 FANTOM5 regulatory
+context and Layer 5 FANTOM6 lncRNA evidence.
+
+Layer 3 (population frequency against reference callsets) is not yet built.
+Separately, ``carrier_frequency`` is a discovery frequency: a sample without a
+call is unobserved, not confirmed reference, so the value is a lower bound on the
+true allele frequency. Genotype refinement, a planned stage after cohort merge,
+is what will correct it. The two are distinct and should not be conflated.
 
 The pieces are separated for testability:
 
@@ -65,9 +71,10 @@ def annotate_cohort(
     fantom6: Mapping[str, Fantom6Evidence] | None = None,
     fantom5: Fantom5Model | None = None,
 ) -> list[AnnotatedSite]:
-    """Run Layer-1 genic annotation and Layer-2 consequence over every cohort site.
+    """Annotate every cohort site with Layers 1 and 2, plus Layers 4 and 5 if given.
 
-    ``fantom6`` maps unversioned Ensembl gene IDs to knockdown evidence (see
+    ``fantom5`` adds Layer 4 regulatory context. ``fantom6`` adds Layer 5: it maps
+    unversioned Ensembl gene IDs to knockdown evidence (see
     :func:`meiva.annotate.fantom6.evidence_by_ensembl`). It is joined on the reported
     gene's ID -- never on symbol -- and left absent when the gene was not tested.
     """

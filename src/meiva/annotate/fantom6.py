@@ -1,4 +1,4 @@
-"""FANTOM6 lncRNA functional evidence (Layer 4, part one).
+"""Layer 5: FANTOM6 lncRNA functional evidence.
 
 FANTOM6 is *not* a coordinate track like FANTOM5. It is a perturbation screen:
 antisense oligos (ASOs) knocked down individual lncRNAs, and the molecular

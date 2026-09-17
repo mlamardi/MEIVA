@@ -1,4 +1,4 @@
-"""FANTOM5 regulatory context: transcribed enhancers and CAGE-defined promoters.
+"""Layer 4: FANTOM5 regulatory context, transcribed enhancers and CAGE promoters.
 
 Where FANTOM6 asks whether a lncRNA *does* anything, FANTOM5 asks *where the
 regulatory elements are*. It is a coordinate resource, so this is an interval

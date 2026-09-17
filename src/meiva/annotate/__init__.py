@@ -1,7 +1,18 @@
-"""Annotation layers (Layer 1+): genic context, consequence, frequency, ...
+"""Annotation layers.
 
-Each layer takes MEISite / cohort objects and enriches them. Layer 1 (genic
-context) lives in `genic.py`.
+Each layer consults reference data and adds columns to a merged locus; none of
+them reads or changes genotypes.
+
+* Layer 1, genic context: :mod:`meiva.annotate.genic` (GENCODE via
+  :mod:`meiva.annotate.gencode`)
+* Layer 2, consequence model: :mod:`meiva.annotate.consequence`
+* Layer 3, population frequency: planned, not yet built
+* Layer 4, regulatory context: :mod:`meiva.annotate.fantom5`
+* Layer 5, lncRNA functional evidence: :mod:`meiva.annotate.fantom6`
+
+Genotype refinement (force-genotyping) is deliberately not a layer. It is a
+pipeline stage after cohort merge that corrects the genotype matrix rather than
+adding columns to it.
 """
 
 from __future__ import annotations

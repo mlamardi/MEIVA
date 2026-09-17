@@ -131,20 +131,34 @@ something mechanistically different from an AluY in a 3′UTR. MEIVA models that
 - **Layer 1, genic context.** CDS, UTR, non-coding exon, splice, intron,
   promoter, up/downstream, intergenic; strand-aware, with sense/antisense
   orientation, MANE-Select flag, gene biotype, and nearest-gene distance,
-  annotated against a pinned GENCODE release (v47).
+  annotated against a pinned GENCODE release (v47, chosen for its large
+  CLS3-driven lncRNA expansion).
 - **Layer 2, consequence model.** VEP-style mechanistic consequence term plus an
   ordinal impact tier, derived from element family, orientation, region, length,
   and biotype.
-
-- **Layer 4, lncRNA functional evidence.** FANTOM6 knockdown phenotypes joined onto
-  the host gene by Ensembl ID, tiered by how many independent ASOs responded.
 - **Layer 4, regulatory context.** FANTOM5 transcribed enhancers and CAGE-defined
   promoters, reported as both exact overlap and distance to the nearest element.
+- **Layer 5, lncRNA functional evidence.** FANTOM6 knockdown phenotypes joined
+  onto the host gene by Ensembl ID, tiered by how many independent ASOs
+  responded.
 
 Planned:
 - **MELT parser,** to exercise and lock the caller-agnostic design.
-- **Layer 3, population frequency** by force-genotyping discovered sites back
-  against the samples, for true allele frequencies rather than discovery counts.
+- **Layer 3, population frequency.** Matching discovered sites against gnomAD-SV
+  and the 1000 Genomes MEI callset with a windowed reciprocal overlap, to report
+  whether an insertion has been seen in reference populations or is absent from
+  them.
+- **Genotype refinement.** Re-interrogating each sample's alignment at every
+  merged locus, so that a sample without a call can be classed as confirmed
+  reference or as unobserved. This is a pipeline stage after cohort merge, not
+  an annotation layer: it corrects the genotype matrix rather than adding
+  columns to it.
+
+Layer 3 and genotype refinement both concern frequency but answer different
+questions. Layer 3 asks whether an insertion is known outside this cohort.
+Genotype refinement asks whether a sample's absence within this cohort is real.
+Until refinement lands, `carrier_frequency` is a discovery frequency, a lower
+bound on the true allele frequency, not an estimate of it.
 
 ## Citing MEIVA
 

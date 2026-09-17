@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Documentation: annotation layers renumbered to match the original design.
+  FANTOM5 regulatory context is Layer 4 and FANTOM6 lncRNA functional evidence is
+  Layer 5, where both were previously labelled Layer 4. Layer 3 is reserved for
+  population frequency against gnomAD-SV and the 1000 Genomes MEI callset.
+  Force-genotyping, previously described as part of Layer 3, is now a separate
+  planned pipeline stage, genotype refinement, since it corrects the genotype
+  matrix rather than adding annotation columns. No code, CLI or TSV changes; the
+  TSV column order is unchanged.
+
 ## [0.1.0] - 2026-09-02
 
 ### Added
