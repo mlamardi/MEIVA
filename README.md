@@ -1,7 +1,6 @@
 # MEIVA — Mobile Element Insertion Variant Annotator
 
 [![PyPI](https://img.shields.io/pypi/v/meiva.svg)](https://pypi.org/project/meiva/)
-[![Python](https://img.shields.io/pypi/pyversions/meiva.svg)](https://pypi.org/project/meiva/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![ZENODO](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22273162-1682D4)](https://doi.org/10.5281/zenodo.22273162)
 
