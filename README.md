@@ -104,7 +104,7 @@ What's missing is everything *downstream*: once you have calls across a cohort,
 there is no standard, maintained tool to annotate and prioritise them. People
 hand-roll scripts. MEIVA is that missing layer.
 
-The intellectual core is **not** the annotation plumbing — it is the
+The intellectual core is **not** the annotation plumbing, it is the
 **MEI-aware consequence model**. General annotators (VEP, SnpEff) treat a
 variant as a point. An MEI is not a point: its functional impact depends on the
 element family, its orientation, its length, its poly-A tail, and the genic
